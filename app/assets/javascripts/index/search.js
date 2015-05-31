@@ -166,21 +166,30 @@ OSM.Search = function(map) {
   algolia.client = $.algolia.Client('977AC8JAJ4', '0958707ae59201f1fbf4c14b5397b7ab');
   algolia.cities = algolia.client.initIndex('Cities');
 
-  $searchInput.typeahead({
-      hint: false,
-      highlight: true
-    }, {
-      name: 'name',
-      source: newAlgoliaAdapter(),
-      display: function(hit) {
-        return hit.name;
-      },
-      templates: {
-        suggestion: function(hit) {
-          return hit.name +
-            ' <span class="country">' + hit.country.name + '</span>';
+  $searchInput
+    .typeahead({
+        hint: false,
+        highlight: true
+      }, {
+        name: 'name',
+        source: newAlgoliaAdapter(),
+        display: function(hit) {
+          return hit.name;
+        },
+        templates: {
+          suggestion: function(hit) {
+            return hit.name +
+              ' <span class="country">' + hit.country.name + '</span>';
+          }
         }
-      }
+      })
+    .on("typeahead:selected", function(e, hit) {
+      // Move the given location on Selection
+      window.location.hash = OSM.formatHash({
+        zoom: 12,
+        lat: hit._geoloc.lat,
+        lon: hit._geoloc.lng
+      });
     });
 
   unwrapTypeahead($searchInput, $("#sidebar"));
