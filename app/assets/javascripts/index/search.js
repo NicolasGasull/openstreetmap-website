@@ -4,12 +4,11 @@
 
 OSM.Search = function(map) {
 
-  // Algolia search suggestions
-  var algolia = {};
+  var $searchInput = $("#sidebar .search_form input[name=query]");
 
+  var algolia = {};
   algolia.client = $.algolia.Client('977AC8JAJ4', '0958707ae59201f1fbf4c14b5397b7ab');
   algolia.cities = algolia.client.initIndex('Cities');
-  algolia.search = $.throttle(100, searchSuggestions);
 
   $(".search_form input[name=query]").on("input", function(e) {
     if ($(e.target).val() == "") {
@@ -19,47 +18,24 @@ OSM.Search = function(map) {
     }
   });
 
-  var $searchInput = $("#sidebar .search_form input[name=query]");
-  var $sidebar = $("#sidebar");
-
   $searchInput.typeahead({
       hint: false,
       highlight: true
     }, {
       name: 'name',
-      source: algolia.cities.ttAdapter({hitsPerPage: 5}),
+      source: $.throttle(200, algolia.cities.ttAdapter({hitsPerPage: 5})),
       display: function(hit) {
         return hit.name;
       },
       templates: {
         suggestion: function(hit) {
           return hit.name +
-            ' <span class="country">' + hit.countryCode + '</span>';
+            ' <span class="country">' + hit.country.name + '</span>';
         }
       }
     });
 
-  // Move typeahead dropdown to the root of the sidebar, otherwise we'll have overflow issues
-  var sidebarOffset = $sidebar.offset();
-  var searchInputOffset = $searchInput.offset();
-  var $typeaheadWrapper = $searchInput.parent();
-
-  // Move search input back to its old wrapper
-  $typeaheadWrapper.parent().append($searchInput.detach());
-
-  // Absoltue position typeahead
-  $typeaheadWrapper = $typeaheadWrapper.detach();
-  $typeaheadWrapper.addClass("tt-search");
-  $typeaheadWrapper.width($searchInput.outerWidth());
-  $typeaheadWrapper.css("position", "absolute");
-  $typeaheadWrapper.css("z-index", 1500);
-  $typeaheadWrapper.offset({
-    top: searchInputOffset.top - sidebarOffset.top + $searchInput.outerHeight(),
-    left: searchInputOffset.left - sidebarOffset.left
-  });
-
-  $sidebar.append($typeaheadWrapper);
-
+  unwrapTypeahead($searchInput, $("#sidebar"));
 
   $("#sidebar_content")
     .on("click", ".search_more a", clickSearchMore)
@@ -134,15 +110,50 @@ OSM.Search = function(map) {
     e.stopPropagation();
   }
 
-  function searchSuggestions($target, cityArg) {
+  /**
+   * Alterates original twitter's typeahead wrapper to avoid overflow issues.
+   * @param (jqElement) $searchElement - The typeahead to unwrap
+   * @param (jqElement) $relativeParent - The relative parent of $searchElement to move typeahead suggestions to
+   */
+  function unwrapTypeahead($searchElement, $relativeParent) {
+    var $typeaheadWrapper = $searchElement.parent();
 
-    algolia.index.search(cityArg)
-      .then(function searchDone(content) {
-        console.log(content);
-      })
-      .fail(function (err) {
-        console.error(err);
-      });
+    // Move search input back to its old wrapper
+    $typeaheadWrapper.parent().append($searchElement.detach());
+
+    // Absoltue position typeahead
+    $typeaheadWrapper = $typeaheadWrapper.detach();
+    $typeaheadWrapper.addClass("tt-search");
+    $typeaheadWrapper.css("position", "absolute");
+    $typeaheadWrapper.css("z-index", 1500);
+
+    $searchElement.data("unwrapTypeahead", {
+      $typeahead: $typeaheadWrapper,
+      $relativeParent: $relativeParent
+    });
+
+    refreshTtSearchStyle($searchElement);
+    $relativeParent.append($typeaheadWrapper);
+  }
+
+  /**
+   * Refreshes the style of an unwrapped typeahead according to
+   * the original search input's style properties.
+   * @param (jqElement) $searchElement - The unwrapped typeahead
+   */
+  function refreshTtSearchStyle($searchElement) {
+    var elementData = $searchElement.data("unwrapTypeahead");
+    var $typeahead = elementData.$typeahead;
+    var $parent = elementData.$relativeParent;
+
+    var searchElementOffset = $searchElement.offset();
+    var parentOffset = $parent.offset();
+
+    $typeahead.width($searchElement.outerWidth());
+    $typeahead.offset({
+      top: searchElementOffset.top - parentOffset.top + $searchElement.outerHeight(),
+      left: searchElementOffset.left - parentOffset.left
+    });
   }
 
   var markers = L.layerGroup().addTo(map);
