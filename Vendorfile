@@ -5,6 +5,14 @@ folder 'vendor/assets' do
     file 'jquery.simulate.js', 'https://raw.github.com/jquery/jquery-ui/master/tests/jquery.simulate.js'
   end
 
+  folder 'typeahead' do
+    file 'typeahead.jquery.min.js', 'http://cdn.jsdelivr.net/typeahead.js/0.10.5/typeahead.jquery.min.js'
+  end
+
+  folder 'algolia' do
+    file 'algoliasearch.jquery.min.js', 'http://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.jquery.min.js'
+  end
+
   folder 'bootstrap' do
     file 'bootstrap.tooltip.js', 'https://raw.github.com/twbs/bootstrap/v2.3.2/js/bootstrap-tooltip.js'
     file 'bootstrap.dropdown.js', 'https://raw.github.com/twbs/bootstrap/v2.3.2/js/bootstrap-dropdown.js'

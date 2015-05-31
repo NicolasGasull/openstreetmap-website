@@ -224,7 +224,7 @@ table {
 
 /* Rules for the header */
 
-#menu-icon { 
+#menu-icon {
   display: none !important;
   float: right;
   background: image-url("menu-icon.png") no-repeat;
@@ -286,7 +286,7 @@ nav.primary {
     > li {
       border-right: $border;
       float: left;
-      &:last-child { 
+      &:last-child {
         border-right: 0;
       }
       > a:hover { background: lighten($green, 30%); }
@@ -367,12 +367,12 @@ nav.secondary {
     > li {
       border-right: $border;
       float: left;
-      &:last-child { 
+      &:last-child {
         border-right: 0;
 
         > a {
           border-radius: 0 $border-radius $border-radius 0;
-        } 
+        }
       }
       &:first-child > a { border-radius: $border-radius 0 0 $border-radius; }
       &:hover a { background: lighten($darkgrey, 30%); }
@@ -650,10 +650,12 @@ nav.secondary {
     z-index: 1000;
     height: auto;
     border-bottom-right-radius: 5px;
-    overflow: hidden;
+    overflow: visible;
+
     .welcome {
       display: block;
     }
+
     #sidebar_content {
       display: none;
     }
@@ -740,7 +742,7 @@ nav.secondary {
       margin-bottom: 8px;
       position: relative;
       transition: border-color 0.08s ease-in;
-      
+
       label {
         position: absolute;
         top: 0;
@@ -873,10 +875,10 @@ nav.secondary {
   padding: $lineheight/2 $lineheight;
   // background: $offwhite;
   // border-bottom: 1px solid #ccc;
-  > .close { 
+  > .close {
     float: right;
     margin-top: 2px;
-    cursor: pointer; 
+    cursor: pointer;
   }
 }
 
@@ -911,6 +913,7 @@ header .search_form {
 
 .search_form {
   position: relative;
+  z-index: 1100;
   padding: $lineheight/2;
   background-color: $lightgrey;
 
@@ -948,6 +951,63 @@ header .search_form {
     right: 6px;
     font-size: 10px;
     color: $blue;
+  }
+}
+
+.tt-search.twitter-typeahead {
+  width: 100%;
+
+  .tt-input, .tt-hint {
+    width: 100%;
+    margin: 0px;
+    padding: 8px 12px;
+    border: 2px solid #ccc;
+    outline: none;
+  }
+
+  .tt-input:focus {
+    border: 2px solid $blue;
+  }
+
+  .tt-hint {
+    color: #999;
+  }
+
+  .tt-dropdown-menu {
+    position: relative;
+    z-index: 1200;
+    width: 100%;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-top: 0px;
+
+    .tt-suggestion {
+      text-align: left;
+      padding: 0px 4px;
+      font-size: 13px;
+      line-height: 30px;
+      border-top: 1px solid #E6E6E6;
+
+      &.tt-cursor {
+        color: #fff;
+        background-color: $blue;
+      }
+
+      em {
+        font-weight: bold;
+        font-style: normal;
+      }
+
+      .country {
+        font-size: 11px;
+        color: #999;
+
+        &.tt-cursor {
+          color: #ddd;
+        }
+      }
+    }
   }
 }
 
@@ -1197,7 +1257,7 @@ header .search_form {
 
 .content-heading {
   background: $lightgrey;
-  
+
   h1 { font-size: 22px; }
 }
 
@@ -1762,7 +1822,7 @@ header .search_form {
     padding-top: $lineheight;
     border-top: 1px solid $lightgrey;
   }
-  .horizontal-list .form-row { 
+  .horizontal-list .form-row {
     float: left;
     padding-right: 10px;
   }
@@ -2317,7 +2377,7 @@ input.richtext_title[type="text"] {
 .site-welcome, .site-fixthemap {
   .center {
     text-align: center;
-    .sprite { 
+    .sprite {
       float: none;
       margin: auto;
     }
@@ -2330,7 +2390,7 @@ input.richtext_title[type="text"] {
     float: left;
   }
 
-  .icon-list { 
+  .icon-list {
     padding-bottom: 20px;
     div {
       margin-bottom: 10px;
@@ -2533,4 +2593,3 @@ input.richtext_title[type="text"] {
     display: none;
   }
 }
-
