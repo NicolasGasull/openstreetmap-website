@@ -4,12 +4,6 @@
 
 OSM.Search = function(map) {
 
-  var $searchInput = $("#sidebar .search_form input[name=query]");
-
-  var algolia = {};
-  algolia.client = $.algolia.Client('977AC8JAJ4', '0958707ae59201f1fbf4c14b5397b7ab');
-  algolia.cities = algolia.client.initIndex('Cities');
-
   $(".search_form input[name=query]").on("input", function(e) {
     if ($(e.target).val() == "") {
       $(".describe_location").fadeIn(100);
@@ -17,25 +11,6 @@ OSM.Search = function(map) {
       $(".describe_location").fadeOut(100);
     }
   });
-
-  $searchInput.typeahead({
-      hint: false,
-      highlight: true
-    }, {
-      name: 'name',
-      source: $.throttle(200, algolia.cities.ttAdapter({hitsPerPage: 5})),
-      display: function(hit) {
-        return hit.name;
-      },
-      templates: {
-        suggestion: function(hit) {
-          return hit.name +
-            ' <span class="country">' + hit.country.name + '</span>';
-        }
-      }
-    });
-
-  unwrapTypeahead($searchInput, $("#sidebar"));
 
   $("#sidebar_content")
     .on("click", ".search_more a", clickSearchMore)
@@ -111,6 +86,33 @@ OSM.Search = function(map) {
   }
 
   /**
+   * Generates a dynamic Algolia adapter that
+   * will consider current map geolocation.
+   */
+  function newAlgoliaAdapter() {
+
+    var geo, adapter;
+
+    return $.throttle(200, function() {
+
+      var newGeo = OSM.mapParams();
+
+      // Renew the adapter each time the position changed
+      if (!geo || !adapter || geo.lon !== newGeo.lon || geo.lat !== newGeo.lat) {
+        geo = newGeo;
+        adapter = algolia.cities.ttAdapter({
+          hitsPerPage: 5,
+          aroundLatLng: geo.lat + "," + geo.lon,
+          aroundRadius: Math.round(40000000 / geo.zoom), // Earth circumference / zoom
+          aroundPrecision: Math.round(5000000 / geo.zoom)
+        });
+      }
+
+      adapter.apply(this, arguments);
+    });
+  }
+
+  /**
    * Alterates original twitter's typeahead wrapper to avoid overflow issues.
    * @param (jqElement) $searchElement - The typeahead to unwrap
    * @param (jqElement) $relativeParent - The relative parent of $searchElement to move typeahead suggestions to
@@ -157,6 +159,31 @@ OSM.Search = function(map) {
   }
 
   var markers = L.layerGroup().addTo(map);
+
+  var $searchInput = $("#sidebar .search_form input[name=query]");
+
+  var algolia = {};
+  algolia.client = $.algolia.Client('977AC8JAJ4', '0958707ae59201f1fbf4c14b5397b7ab');
+  algolia.cities = algolia.client.initIndex('Cities');
+
+  $searchInput.typeahead({
+      hint: false,
+      highlight: true
+    }, {
+      name: 'name',
+      source: newAlgoliaAdapter(),
+      display: function(hit) {
+        return hit.name;
+      },
+      templates: {
+        suggestion: function(hit) {
+          return hit.name +
+            ' <span class="country">' + hit.country.name + '</span>';
+        }
+      }
+    });
+
+  unwrapTypeahead($searchInput, $("#sidebar"));
 
   var page = {};
 
