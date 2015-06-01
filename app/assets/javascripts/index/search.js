@@ -92,6 +92,7 @@ OSM.Search = function(map) {
   function newAlgoliaAdapter() {
 
     var geo, adapter;
+    var aroundRadius = Math.round(40075160 / 1.5); // Earth circumference / 1.5
 
     return $.throttle(200, function() {
 
@@ -103,13 +104,22 @@ OSM.Search = function(map) {
         adapter = algolia.cities.ttAdapter({
           hitsPerPage: 5,
           aroundLatLng: geo.lat + "," + geo.lon,
-          aroundRadius: Math.round(40000000 / geo.zoom), // Earth circumference / zoom
-          aroundPrecision: Math.round(5000000 / geo.zoom)
+          aroundRadius: aroundRadius,
+          aroundPrecision: distanceZoomFormula(5000000, geo.zoom)
         });
       }
 
       adapter.apply(this, arguments);
     });
+  }
+
+  /**
+   * A formula that reduces a world globe distance depending the zoom.
+   * @param (Number) baseDist - The base globe distance
+   * @param (Number) zoom - The zoom
+   */
+  function distanceZoomFormula(baseDist, zoom) {
+    return Math.round(baseDist / Math.pow(Math.max(zoom - 1, 1), 2));
   }
 
   /**
@@ -178,7 +188,7 @@ OSM.Search = function(map) {
         },
         templates: {
           suggestion: function(hit) {
-            return hit.name +
+            return '<span class="place-icon">&nbsp;</span>' + hit.name +
               ' <span class="country">' + hit.country.name + '</span>';
           }
         }
@@ -200,6 +210,7 @@ OSM.Search = function(map) {
     var params = querystring.parse(path.substring(path.indexOf('?') + 1));
     $(".search_form input[name=query]").val(params.query);
     OSM.loadSidebarContent(path, page.load);
+    $searchInput.typeahead("close");
   };
 
   page.load = function() {

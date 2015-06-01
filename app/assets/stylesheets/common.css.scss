@@ -1001,6 +1001,19 @@ header .search_form {
         font-style: normal;
       }
 
+      .place-icon {
+        display: inline-block;
+        height: 20px;
+        width: 15px;
+        margin-right: 7px;
+        margin-left: 2px;
+        margin-top: 6px;
+        vertical-align: top;
+        background-position: -1px -161px;
+        background-image: url("https://maps.gstatic.com/mapfiles/api-3/images/autocomplete-icons.png");
+        background-size: 34px auto;
+      }
+
       .country {
         font-size: 11px;
         color: #999;
