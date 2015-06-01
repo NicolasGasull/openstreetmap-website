@@ -651,11 +651,9 @@ nav.secondary {
     height: auto;
     border-bottom-right-radius: 5px;
     overflow: visible;
-
     .welcome {
       display: block;
     }
-
     #sidebar_content {
       display: none;
     }
@@ -2392,13 +2390,13 @@ input.richtext_title[type="text"] {
 .site-welcome, .site-fixthemap {
   .center {
     text-align: center;
-    .sprite {
+    .sprite { 
       float: none;
       margin: auto;
     }
   }
 
-  .sprite { 
+  .sprite {
     background-image: image-url("welcome-sprite.png");
     background-size: 500px 250px;
     display: block;

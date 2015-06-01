@@ -3,14 +3,14 @@
 //= require algoliasearch.jquery.min.js
 
 OSM.Search = function(map) {
-
-    $(".search_form input[name=query]").on("input", function(e) {
+  $(".search_form input[name=query]")
+    .on("input", function(e) {
       if ($(e.target).val() == "") {
         $(".describe_location").fadeIn(100);
       } else {
         $(".describe_location").fadeOut(100);
       }
-    });
+    })
 
   $("#sidebar_content")
     .on("click", ".search_more a", clickSearchMore)
